@@ -2,7 +2,7 @@
   <div id="target-controls">
     <b-collapse v-if="targetIsEnabled" id="target_collapse" v-model="visible">
       <b-form
-          v-if="!readOnly"
+          v-if="!readOnly || readonlySuppressed"
           class="border p-3"
           accept-charset="UTF-8"
           onsubmit="return false"
@@ -130,6 +130,7 @@ export default {
     targetValid: Boolean,
     test: Object,
     group: Object,
+    readonlySuppressed: Boolean,
   },
   computed: {
     multipleValues() {

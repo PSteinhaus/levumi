@@ -124,6 +124,7 @@
                 :target-valid="targetValid"
                 :test="test"
                 :group="group"
+                :readonly-suppressed="isReadOnlySuppressed"
             ></TargetControls>
           </b-col>
         </b-row>
@@ -328,6 +329,9 @@
       },
       isTaskLevelChart() {
         return Boolean(this.viewConfig.isTaskLevelChart)
+      },
+      isReadOnlySuppressed() {
+        return Boolean(this.viewConfig.readOnlySuppressed)
       },
       targetIsSlopeVariant() {
         return Boolean(this.viewConfig.targetOptions?.type === 'slope')
