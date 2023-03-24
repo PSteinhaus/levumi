@@ -58,6 +58,7 @@
           width="100%"
           :options="chartOptions"
           :series="chartSeries"
+          @updated="addTaskLevelListeners"
         />
       </b-col>
     </b-row>
@@ -156,6 +157,9 @@
         :items="simpleTableData"
       ></b-table-lite>
     </b-row>
+    <div id="task_level_tooltip">
+
+    </div>
   </div>
 </template>
 
@@ -178,6 +182,7 @@
   import {createTrendline} from "./linearRegressionHelpers";
   import {computed} from "vue";
   import TargetControls from "./target-controls.vue";
+  import {useTestsStore} from "@/store/testsStore";
 
   export default {
     name: 'AnalysisView',
@@ -199,6 +204,10 @@
       results: Array,
       students: Array,
       test: Object,
+    },
+    setup() {
+      const testsStore = useTestsStore()
+      return { testsStore }
     },
     data: function () {
       return {
@@ -317,6 +326,9 @@
       chartSeries() {
         return [...this.graphData]
       },
+      isTaskLevelChart() {
+        return Boolean(this.viewConfig.isTaskLevelChart)
+      },
       targetIsSlopeVariant() {
         return Boolean(this.viewConfig.targetOptions?.type === 'slope')
       },
@@ -361,6 +373,18 @@
             .find(target => target.student_id === sId && target.view === this.viewConfig?.key)
         return res === undefined ? null : res
       },
+      testData() {
+        return this.testsStore.tests
+            .find(area => area.id === this.test.area_id).competences
+            ?.find(competence => competence.id === this.test.competence_id).test_families
+            ?.find(family => family.id === this.test.test_family_id).tests
+            ?.find(test => test.id === this.test.id)
+      },
+      attachedLevelImages() {
+        return this.testData?.info_attachments.filter(attachment =>
+            attachment.content_type.startsWith('image') && attachment.filename.startsWith('Niveau')
+        )
+      },
     },
     watch: {
       annotations() {
@@ -369,6 +393,9 @@
           this.updateView(true)
         }
       },
+    },
+    async created() {
+      await this.testsStore.fetch()
     },
     mounted() {
       // also sets the initial values for dateUntil and targetVal when in group view, due to call to restoreTarget
@@ -471,7 +498,7 @@
 
         const trueChartType = view.options.chart.type
         const preparedOptions = prepareOptions(trueChartType, view.options, this.weeks,
-            this.targetIsSlopeVariant, this.targetIsEnabled, animate)
+            this.targetIsSlopeVariant, this.targetIsEnabled, animate, this.isTaskLevelChart)
 
         const formatDate = trueChartType === 'bar'
         let trendlineData = undefined
@@ -721,6 +748,51 @@
             break
         }
       },
+
+      showTaskExample(evt) {
+        const tooltip = document.getElementById("task_level_tooltip");
+        // find the corresponding example image for the level
+        const exampleImg = this.attachedLevelImages.find(a => a.filename === "Niveau_" + Math.round(evt.target.innerHTML) + ".png")
+        if (exampleImg !== undefined) {
+          tooltip.innerHTML = "<p>Beispielaufgabe Niveau "+ Math.round(evt.target.innerHTML) + ":</p><img src=" + exampleImg.filepath + " style='width: 300px'>"
+          tooltip.style.display = "block"
+          tooltip.style.left = evt.x + 20 + 'px'
+          tooltip.style.top = evt.y + 'px'
+        }
+      },
+
+      hideTaskExample() {
+        var tooltip = document.getElementById("task_level_tooltip")
+        tooltip.style.display = "none"
+      },
+
+      /***
+       * Adds event listeners to the y-axis labels to show examples of tasks at levels corresponding to the label.
+       * These examples are shown as images when users hover over a label.
+       * @param _chartContext
+       * @param _config
+       */
+      addTaskLevelListeners() {
+        document.querySelectorAll('.apexcharts-yaxis-label').forEach(item => {
+          item.addEventListener("mousemove", this.showTaskExample)
+          item.addEventListener("mouseleave", this.hideTaskExample)
+        })
+      },
     },
   }
 </script>
+
+<style>
+#task_level_tooltip {
+  background-color: white;
+  border: 2px solid #5a598c;
+  border-radius: 4px;
+  padding: 5px;
+  position: fixed;
+  transform: translate(0%, -50%);
+  font-size: 1rem;
+  display: none;
+  z-index: 999;
+  text-align: center;
+}
+</style>

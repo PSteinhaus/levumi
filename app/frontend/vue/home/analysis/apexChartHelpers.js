@@ -3,10 +3,10 @@ import deepmerge from 'deepmerge'
 import isArray from "lodash/isArray";
 import {printDate} from "@/utils/date";
 
-export const prepareOptions = (chartType, customOptions, weeks, isSlope, targetIsEnabled, animate) => {
+export const prepareOptions = (chartType, customOptions, weeks, isSlope, targetIsEnabled, animate, isTaskLevelChart) => {
   // if any series wants to be of type rangeArea then the whole chart needs to be
   // therefore we need to save the "true" chart type to hand over to all non-rangeArea series (i.e. all except the slope target)
-  if (chartType !== 'line' && chartType !== 'bar' && chartType !== 'rangeArea') {
+  if (!['line', 'bar', 'rangeArea'].includes(chartType)) {
     chartType = 'line'
   }
   let opt
@@ -24,6 +24,13 @@ export const prepareOptions = (chartType, customOptions, weeks, isSlope, targetI
       case 'rangeArea':
         opt = apexChartOptions(weekLabels).rangeArea
         break
+      case 'line':
+        if (isTaskLevelChart) {
+          opt = apexChartOptions(weekLabels).taskLevelLine
+        } else {
+          opt = apexChartOptions(weekLabels).line
+        }
+        break
       default:
         opt = apexChartOptions(weekLabels).line
     }
@@ -31,6 +38,9 @@ export const prepareOptions = (chartType, customOptions, weeks, isSlope, targetI
   const options = deepmerge(opt, customOptions)
   if (needRangeAreaChart) {
     options.chart.type = 'rangeArea'
+  }
+  if (chartType === 'taskLevelLine') {
+    options.chart.type = 'line'
   }
   // for updates on a chart animations may be inadequate
   options.chart.animations.enabled = animate
@@ -161,6 +171,65 @@ export const apexChartOptions = weekLabels => ({
         format: 'dd.MM.yyyy',
       },
     },
+  },
+  taskLevelLine: {
+    chart: {
+      ...commonChart(),
+      type: 'line',
+    },
+    ...commonTaskLevelOptions(),
+  },
+})
+
+/** the idea behind this was that there might be wright-maps based on scatter plots
+ * that would be utilizing this too */
+const commonTaskLevelOptions = () => ({
+  ...commonOptions(),
+  colors: apexColors(),
+  stroke: {
+    curve: 'straight',
+    width: 1, // must be kept in, as prepareOptionsAsArrays depends upon its existence
+    dashArray: 0 // must be kept in, as prepareOptionsAsArrays depends upon its existence
+  },
+  fill: {
+    opacity: 0.9, // must be kept in, as prepareOptionsAsArrays depends upon its existence
+    type: 'solid',
+  },
+  grid: {
+    ...commonGrid(),
+    padding: {
+      right: 35,
+      left: 35,
+    },
+  },
+  tooltip: {
+    ...commonTooltip(),
+    enabled: true,
+    x: { show: false },
+  },
+  xaxis: {
+    tooltip: { enabled: false },
+    type: 'datetime',
+    title: {
+      text: 'Testwoche',
+      offsetY: 90,
+    },
+    labels: {
+      minHeight: 20,
+      format: 'dd.MM.yyyy',
+    },
+  },
+  yaxis: {
+    min: 0,
+    forceNiceScale: true,
+    labels: {
+      style: {
+        colors: ['#5a598c'],
+        fontSize: '16px',
+        fontWeight: 'bold',
+      },
+      formatter: val => val.toFixed(0) // levels are always natural numbers
+    }
   },
 })
 
