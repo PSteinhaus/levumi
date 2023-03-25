@@ -66,65 +66,71 @@
       <b-col>
         <b-row class="ml-1">
           <b-col>
-            <b-button class="mr-4 mb-2" size="sm" variant="outline-primary" style="float: right" @click="export_graph">
-              <i class="fas fa-file-pdf"></i>
-              PDF erzeugen
-            </b-button>
             <b-button
-                id="annotation_btn"
-                :aria-expanded="annotationControlVisible ? 'true' : 'false'"
-                aria-controls="annotation_collapse"
-                size="sm"
-                variant="outline-secondary"
-                @click="toggleCollapse('annotation_collapse')"
+              id="annotation_btn"
+              :aria-expanded="annotationControlVisible ? 'true' : 'false'"
+              aria-controls="annotation_collapse"
+              size="sm"
+              :variant="`${annotationControlVisible ? 'outline-success' : 'outline-primary'}`"
+              @click="toggleCollapse('annotation_collapse')"
             >
               Anmerkungen
-              <i :class="`when-closed fas ${annotationControlVisible ? 'fa-caret-down' : 'fa-caret-up'}`"></i>
+              <i
+                :class="`when-closed fas ${
+                  annotationControlVisible ? 'fa-caret-down' : 'fa-caret-up'
+                }`"
+              ></i>
             </b-button>
             <b-button
-                v-if="targetIsEnabled"
-                id="target_btn"
-                class="ml-2"
-                :aria-expanded="targetControlVisible ? 'true' : 'false'"
-                aria-controls="target_collapse"
-                size="sm"
-                variant="outline-secondary"
-                @click="toggleCollapse('target_collapse')"
+              v-if="targetIsEnabled"
+              id="target_btn"
+              class="ml-2"
+              :aria-expanded="targetControlVisible ? 'true' : 'false'"
+              aria-controls="target_collapse"
+              size="sm"
+              :variant="`${targetControlVisible ? 'outline-success' : 'outline-primary'}`"
+              @click="toggleCollapse('target_collapse')"
             >
               Ziel
-              <i :class="`when-closed fas ${targetControlVisible ? 'fa-caret-down' : 'fa-caret-up'}`"></i>
+              <i
+                :class="`when-closed fas ${targetControlVisible ? 'fa-caret-down' : 'fa-caret-up'}`"
+              ></i>
+            </b-button>
+            <b-button class="ml-2" size="sm" variant="outline-primary" @click="export_graph">
+              <i class="fas fa-file-pdf"></i>
+              PDF erzeugen
             </b-button>
           </b-col>
         </b-row>
         <b-row class="ml-1">
           <b-col class="mr-4">
             <annotations-section
-                :annotations="annotations"
-                :group="group"
-                :test="test"
-                :selected-student="selectedStudent"
-                :selected-view="selectedView"
-                :annotation-control-visible.sync="annotationControlVisible"
-                :trend-is-enabled="trendIsEnabled"
-                @annotation-removed="removeAnnotation"
+              :annotations="annotations"
+              :group="group"
+              :test="test"
+              :selected-student="selectedStudent"
+              :selected-view="selectedView"
+              :annotation-control-visible.sync="annotationControlVisible"
+              :trend-is-enabled="trendIsEnabled"
+              @annotation-removed="removeAnnotation"
             />
             <TargetControls
-                :target-val="targetVal"
-                :deviation-val="deviationVal"
-                :date-until-val="dateUntilVal"
-                :date-until-is-enabled="dateUntilIsEnabled"
-                :target-is-enabled="targetIsEnabled"
-                :deviation-is-enabled="deviationIsEnabled"
-                :target-val-stored="targetValStored"
-                :date-until-stored="dateUntilStored"
-                :deviation-stored="deviationStored"
-                :student-targets="studentTargets"
-                :selected-student-id="selectedStudentId"
-                :target-control-visible.sync="targetControlVisible"
-                :target-valid="targetValid"
-                :test="test"
-                :group="group"
-                :readonly-suppressed="isReadOnlySuppressed"
+              :target-val="targetVal"
+              :deviation-val="deviationVal"
+              :date-until-val="dateUntilVal"
+              :date-until-is-enabled="dateUntilIsEnabled"
+              :target-is-enabled="targetIsEnabled"
+              :deviation-is-enabled="deviationIsEnabled"
+              :target-val-stored="targetValStored"
+              :date-until-stored="dateUntilStored"
+              :deviation-stored="deviationStored"
+              :student-targets="studentTargets"
+              :selected-student-id="selectedStudentId"
+              :target-control-visible.sync="targetControlVisible"
+              :target-valid="targetValid"
+              :test="test"
+              :group="group"
+              :readonly-suppressed="isReadOnlySuppressed"
             ></TargetControls>
           </b-col>
         </b-row>
@@ -174,27 +180,29 @@
     addTrendToChartData,
     annotationsLineOptions,
     annotationsPointOptions,
-    targetAnnotationOptions, targetRangeAnnotationOptions,
-    prepareOptions, apexChartOptions,
+    targetAnnotationOptions,
+    targetRangeAnnotationOptions,
+    prepareOptions,
+    apexChartOptions,
   } from './apexChartHelpers'
   import { printDate } from '../../../utils/date'
-  import {ajax} from "@/utils/ajax";
-  import apiRoutes from "../../routes/api-routes";
-  import {createTrendline} from "./linearRegressionHelpers";
-  import {computed} from "vue";
-  import TargetControls from "./target-controls.vue";
-  import {useTestsStore} from "@/store/testsStore";
+  import { ajax } from '@/utils/ajax'
+  import apiRoutes from '../../routes/api-routes'
+  import { createTrendline } from './linearRegressionHelpers'
+  import { computed } from 'vue'
+  import TargetControls from './target-controls.vue'
+  import { useTestsStore}  from '@/store/testsStore';
 
   export default {
     name: 'AnalysisView',
     components: { AnnotationsSection, TargetControls },
-    inject: ['autoScroll', 'readOnly', 'studentName', 'weeks', 'student_name_parts', 'printDate'],
+    inject: ['readOnly', 'studentName', 'weeks', 'student_name_parts', 'printDate'],
     provide: function () {
       return {
-        restoreTarget: this.restoreTarget,  // allowing the target controls to restore and set the target themselves
+        restoreTarget: this.restoreTarget, // allowing the target controls to restore and set the target themselves
         setTarget: this.setTarget,
         loadStudentTargets: this.loadStudentTargets,
-        targetStored: computed(() => this.targetStored),  // computed necessary for reactivity
+        targetStored: computed(() => this.targetStored), // computed necessary for reactivity
         viewConfig: computed(() => this.viewConfig),
       }
     },
@@ -213,17 +221,18 @@
     data: function () {
       return {
         annotationControlVisible: false,
-        targetControlVisible: false,
+        chartOptions: apexChartOptions([]).line, // just so that apexcharts is happy being initialized correctly
         dateUntilVal: null,
         deviationVal: null,
-        targetVal: null,
-        targetAdded: false,
+        graphData: [],
+        isInitialized: false,
         selectedStudentId: -1,
-        studentTargets: [],
         selectedView: 0,
         simpleTableData: undefined,
-        chartOptions: apexChartOptions([]).line, // just so that apexcharts is happy being initialized correctly
-        graphData: [],
+        studentTargets: [],
+        targetAdded: false,
+        targetControlVisible: false,
+        targetVal: null,
       }
     },
     computed: {
@@ -247,10 +256,7 @@
         return this.viewConfig.type
       },
       graph_visible() {
-        return (
-          this.viewConfig.type === 'graph' ||
-          this.viewConfig.type === 'graph_table'
-        )
+        return this.viewConfig.type === 'graph' || this.viewConfig.type === 'graph_table'
       },
       has_group_views() {
         for (let i = 0; i < this.configuration.views.length; ++i) {
@@ -269,10 +275,7 @@
         return false
       },
       table_visible() {
-        return (
-          this.viewConfig.type === 'table' ||
-          this.viewConfig.type === 'graph_table'
-        )
+        return this.viewConfig.type === 'table' || this.viewConfig.type === 'graph_table'
       },
       table_data() {
         if (this.viewConfig.type === 'graph') {
@@ -288,15 +291,10 @@
               this.results[r].test_week === weeks[w]
             ) {
               let temp = {}
-              for (
-                let i = 0;
-                i < this.viewConfig.column_keys.length;
-                ++i
-              ) {
+              for (let i = 0; i < this.viewConfig.column_keys.length; ++i) {
                 let key = this.viewConfig.column_keys[i]
                 let name = this.viewConfig.columns[i]
-                temp[name] =
-                  this.results[r].views[this.viewConfig.key][key]
+                temp[name] = this.results[r].views[this.viewConfig.key][key]
                 if (temp[name] === undefined) {
                   temp[name] = '-'
                 }
@@ -330,27 +328,32 @@
       isTaskLevelChart() {
         return Boolean(this.viewConfig.isTaskLevelChart)
       },
-      isReadOnlySuppressed() {
-        return Boolean(this.viewConfig.readOnlySuppressed)
-      },
       targetIsSlopeVariant() {
-        return Boolean(this.viewConfig.targetOptions?.type === 'slope')
+        //return Boolean(this.viewConfig.targetOptions?.type === 'slope')
+        return true
       },
       targetIsEnabled() {
-        return !this.viewConfig.series_keys && Boolean(this.viewConfig.targetOptions?.enabled)
+        //return !this.viewConfig.series_keys && Boolean(this.viewConfig.targetOptions?.enabled)
+        return true
       },
       dateUntilIsEnabled() {
         // if a slope target is to be shown then we need dateUntil anyway
-        return Boolean(this.viewConfig.targetOptions?.selectEndDate) || (this.targetIsEnabled && this.targetIsSlopeVariant)
+        return (
+          Boolean(this.viewConfig.targetOptions?.selectEndDate) ||
+          (this.targetIsEnabled && this.targetIsSlopeVariant)
+        )
       },
       deviationIsEnabled() {
-        return Boolean(this.viewConfig.targetOptions?.selectDeviation)
+        //return Boolean(this.viewConfig.targetOptions?.selectDeviation)
+        return true
       },
       trendIsEnabled() {
-        return Boolean(this.viewConfig.trendOptions?.enabled)
+        //return Boolean(this.viewConfig.trendOptions?.enabled)
+        return true
       },
       extrapolationIsEnabled() {
-        return Boolean(this.viewConfig.trendOptions?.extrapolate)
+        //return Boolean(this.viewConfig.trendOptions?.extrapolate)
+        return true
       },
       deviationStored() {
         return this.targetStored?.deviation || null
@@ -362,10 +365,12 @@
         return this.targetValid && this.dateUntilVal
       },
       targetValid() {
-        return this.targetVal != null &&
-            this.targetVal.trim().length !== 0 &&
-            !Number.isNaN(this.targetVal) &&
-            Number(this.targetVal) >= 0
+        return (
+          this.targetVal != null &&
+          this.targetVal.trim().length !== 0 &&
+          !Number.isNaN(this.targetVal) &&
+          Number(this.targetVal) >= 0
+        )
       },
       targetValStored() {
         return this.targetStored?.value || null
@@ -373,9 +378,34 @@
       targetStored() {
         // when no target is defined return null (nothing stored)
         const sId = this.selectedStudentId === -1 ? null : this.selectedStudentId // group targets are stored under a null student
-        const res = this.studentTargets  // find the target belonging to this student in the current view
-            .find(target => target.student_id === sId && target.view === this.viewConfig?.key)
+        const res = this.studentTargets // find the target belonging to this student in the current view
+          .find(target => target.student_id === sId && target.view === this.viewConfig?.key)
         return res === undefined ? null : res
+      },
+      /** Returns the stored target INCLUDING THE GROUP TARGET.
+       * So when there's no individual target, but a group target, the latter is returned, else 'null' */
+      targetStoredInclGroup() {
+        if (this.targetStored !== null) {
+          return this.targetStored
+        }
+        const groupTarget = this.studentTargets
+            .find(target => target.student_id === null && target.view === this.viewConfig?.key)
+        return groupTarget === undefined ? null : groupTarget
+      },
+      /** Returns the deviation value of stored target INCLUDING THE GROUP TARGET.
+       * So when there's no individual target, but a group target, the latter is returned, else 'null' */
+      deviationStoredInclGroup() {
+        return this.targetStoredInclGroup?.deviation || null
+      },
+      /** Returns the date value of the stored target INCLUDING THE GROUP TARGET.
+       * So when there's no individual target, but a group target, the latter is returned, else 'null' */
+      dateUntilStoredInclGroup() {
+        return this.targetStoredInclGroup?.date_until || null
+      },
+      /** Returns the numerical value of stored target INCLUDING THE GROUP TARGET.
+       * So when there's no individual target, but a group target, the latter is returned, else 'null' */
+      targetValStoredInclGroup() {
+        return this.targetStoredInclGroup?.value || null
       },
       testData() {
         return this.testsStore.tests
@@ -392,8 +422,13 @@
     },
     watch: {
       annotations() {
-        this.updateAnnotations()
-        if (this.trendIsEnabled) { // if trends are enabled we may need to let trend lines adapt to thresholds in annotations
+        // this watcher might run before the chart is properly instantiated, resulting in Apexcharts
+        // throwing an error when it tries to draw the annotations.
+        if (this.isInitialized) {
+          this.updateAnnotations()
+        }
+        if (this.trendIsEnabled) {
+          // if trends are enabled we may need to let trend lines adapt to thresholds in annotations
           this.updateView(true)
         }
       },
@@ -404,13 +439,13 @@
     mounted() {
       // also sets the initial values for dateUntil and targetVal when in group view, due to call to restoreTarget
       this.loadStudentTargets()
-      this.setStudentAndUpdate(this.has_group_views
-        ? -1
-        : this.studentsWithResults[this.studentsWithResults.length - 1]?.id || -1
-        ? this.studentsWithResults[0]?.id || -1
-        : -1
+      this.setStudentAndUpdate(
+        this.has_group_views
+          ? -1
+          : this.studentsWithResults[this.studentsWithResults.length - 1]?.id || -1
+          ? this.studentsWithResults[0]?.id || -1
+          : -1
       )
-      this.updateView(true)
     },
     methods: {
       setSelectedView(index) {
@@ -472,7 +507,9 @@
         })
       },
       XYFromResult(result, seriesKey, formatDate) {
-        if (!result) {return undefined}
+        if (!result) {
+          return undefined
+        }
         let yVal
         const view = this.viewConfig
         if (seriesKey) {
@@ -481,7 +518,7 @@
           yVal = result?.views[view.key] || null
         }
         return {
-          x: formatDate? printDate(result.test_week) : result.test_week || null,
+          x: formatDate ? printDate(result.test_week) : result.test_week || null,
           y: yVal,
         }
       },
@@ -498,11 +535,20 @@
       },
       updateView(animate) {
         const view = this.viewConfig
-        if (view.type === 'table') { return }
+        if (view.type === 'table') {
+          return
+        }
 
         const trueChartType = view.options.chart.type
-        const preparedOptions = prepareOptions(trueChartType, view.options, this.weeks,
-            this.targetIsSlopeVariant, this.targetIsEnabled, animate, this.isTaskLevelChart)
+        const preparedOptions = prepareOptions(
+          trueChartType,
+          view.options,
+          this.weeks,
+          this.targetIsSlopeVariant,
+          this.targetIsEnabled,
+          animate,
+          this.isTaskLevelChart
+        )
 
         const formatDate = trueChartType === 'bar'
         let trendlineData = undefined
@@ -510,27 +556,45 @@
         // group data
         if (this.selectedStudentId === -1) {
           gData = this.studentsWithResults.map(student => {
-            return { name: student.name, type: trueChartType, data: this.createSeries(student.id, undefined, formatDate) }
+            return {
+              name: student.name,
+              type: trueChartType,
+              data: this.createSeries(student.id, undefined, formatDate),
+            }
           })
         } else {
           const student = this.students.find(s => s.id === this.selectedStudentId)
           // individual student data with single series
           if (!view.series_keys) {
-            gData = [{ name: student.name, type: trueChartType, data: this.createSeries(student.id, undefined, formatDate) }]
+            gData = [
+              {
+                name: student.name,
+                type: trueChartType,
+                data: this.createSeries(student.id, undefined, formatDate),
+              },
+            ]
             // only create trend line data when a single series is shown
-            if (this.trendIsEnabled && trueChartType !== 'bar') {  // only create trend line data when the view is configured to show such
+            if (this.trendIsEnabled && trueChartType !== 'bar') {
+              // only create trend line data when the view is configured to show such
               // 'bar' charts do not support trends right now, as they are based on categories
               // hand over available time to make sure the line reaches up to this date IF extrapolation is enabled
               trendlineData = createTrendline(
-                  gData[0]?.data,
-                  this.extrapolationIsEnabled ? this.dateUntilVal : null,
-                  this.annotations.filter(a => (a.trend_threshold && a.student_id === student.id && a.view === this.selectedView))
+                gData[0]?.data,
+                this.extrapolationIsEnabled ? this.dateUntilVal : null,
+                this.annotations.filter(
+                  a =>
+                    a.trend_threshold && a.student_id === student.id && a.view === this.selectedView
+                )
               )
             }
           } else {
             // individual student data with multiple series
             gData = view.series_keys.map((series_key, index) => {
-              return { name: view.series[index], type: trueChartType, data: this.createSeries(student.id, series_key, formatDate) }
+              return {
+                name: view.series[index],
+                type: trueChartType,
+                data: this.createSeries(student.id, series_key, formatDate),
+              }
             })
           }
         }
@@ -567,9 +631,11 @@
         // Options have to be set once at the point where they've been prepared to completion, see: https://github.com/apexcharts/vue-apexcharts#how-do-i-update-the-chart
         this.graphData = gData
         this.chartOptions = preparedOptions
+
         // FIXME: using setTimeout here is a workaround:
         // if called immediately the added annotations won't be rendered for some reason when coming from a view of type 'bar' (or possibly also other types)
-        setTimeout(this.updateAnnotations, 1)
+        setTimeout(this.updateAnnotations)
+        this.isInitialized = true
       },
 
       updateAnnotations() {
@@ -578,7 +644,7 @@
 
         // get annotations that need to be drawn in the current chart
         const applicableAnnotations = this.annotations.filter(
-          annotation => annotation.view === this.selectedView && annotation.student_id === studentId
+          annotation => annotation.view === this.selectedView && (annotation.student_id === studentId || annotation.student_id === null)
         )
 
         const xaxis = applicableAnnotations
@@ -586,18 +652,19 @@
             annotation =>
               annotation.view === this.selectedView &&
               (annotation.start !== annotation.end ||
-              (studentId === null && annotation.start === annotation.end))
+                (annotation.student_id === null && annotation.start === annotation.end))
           )
           .map(annotation => annotationsLineOptions(annotation, this.weeks))
 
         const points = applicableAnnotations
-          .filter(annotation =>
+          .filter(
+            annotation =>
               annotation.view === this.selectedView &&
-              annotation.start === annotation.end && studentId !== null)
+              annotation.start === annotation.end &&
+                annotation.student_id !== null
+          )
           .map(annotation => {
-            const dataForAnnotation = this.graphData[0].data.find(
-              d => d.x === annotation.start
-            )
+            const dataForAnnotation = this.graphData[0].data.find(d => d.x === annotation.start)
             return annotationsPointOptions(
               this.viewConfig,
               annotation,
@@ -610,31 +677,39 @@
         this.annotations.forEach(annotation =>
           this.$refs.levumiChart.removeAnnotation('a' + annotation.id)
         )
+
         xaxis.forEach(annotation => this.$refs.levumiChart.addXaxisAnnotation(annotation))
         points.forEach(annotation => this.$refs.levumiChart.addPointAnnotation(annotation))
       },
 
       // append the slope target line on the chart if the slope variant is chosen by the current view
       appendSlopeTarget(graphData, opt) {
-        if (!this.targetIsSlopeVariant || !this.targetAndTimeValid) { return }
+        if (!this.targetIsSlopeVariant || !this.targetAndTimeValid) {
+          return
+        }
         // for the slope variant of a target line we need to add a series that will form this line and set chart options for it
         // first calculate the start point
-        let startWeek = this.weeks.reduce((acc, w) => w < acc ? w : acc)
-        const startWeekResults = this.results.filter((res) => res.test_week === startWeek)
+        let startWeek = this.weeks.reduce((acc, w) => (w < acc ? w : acc))
+        const startWeekResults = this.results.filter(res => res.test_week === startWeek)
         let startY
         if (this.selectedStudentId === -1) {
           // if no student is selected then calculate the average over the results of the first week
-          startY = startWeekResults.reduce((acc, res) => {
-            return acc + this.XYFromResult(res, null)?.y || 0
-          }, 0) / startWeekResults.length
+          startY =
+            startWeekResults.reduce((acc, res) => {
+              return acc + this.XYFromResult(res, null)?.y || 0
+            }, 0) / startWeekResults.length
         } else {
           // if a student IS selected take their first result as the starting point
-          const firstResult = this.results.reduce((acc, res) => {
-                return res.student_id === this.selectedStudentId && Date.parse(res.test_week) < Date.parse(acc.test_week) ? res : acc
-              },
-              // if people still use this Levumi code in the year 90000 this will of course break
-              // but then again, this means they wouldn't have looked at it for 88000 years... (specified max date is somewhere around 270000)
-              { test_week: new Date(Date.UTC(90000,12,24)) }
+          const firstResult = this.results.reduce(
+            (acc, res) => {
+              return res.student_id === this.selectedStudentId &&
+                Date.parse(res.test_week) < Date.parse(acc.test_week)
+                ? res
+                : acc
+            },
+            // if people still use this Levumi code in the year 90000 this will of course break
+            // but then again, this means they wouldn't have looked at it for 88000 years... (specified max date is somewhere around 270000)
+            { test_week: new Date(Date.UTC(90000, 12, 24)) }
           )
           startWeek = firstResult.test_week
           startY = this.XYFromResult(firstResult, null)?.y
@@ -642,47 +717,70 @@
         const deviate = this.deviationVal > 0
 
         const startPoint = { x: startWeek, y: startY }
-        const startPointRange = deviate ? {
-          x: startWeek,
-          y: [startY, startY]
-        } : null
+        const startPointRange = deviate
+          ? {
+              x: startWeek,
+              y: [startY, startY],
+            }
+          : null
         // the end point is then created by combining the date until which the target is to be reached with the chosen target value
         // when a deviation is desired also create a y value lowered by the accepted deviation
         const endPoint = { x: this.dateUntilVal, y: this.targetVal }
-        const endPointRange = deviate ? {
-          x: this.dateUntilVal,
-          y: [this.targetVal * (1 - this.deviationVal / 100) , this.targetVal]
-        } : null
+        const endPointRange = deviate
+          ? {
+              x: this.dateUntilVal,
+              y: [this.targetVal * (1 - this.deviationVal / 100), this.targetVal],
+            }
+          : null
 
         let endConditionY
-        if (deviate) { endConditionY = undefined != endPointRange.y[0] && undefined != endPointRange.y[1] }
-        else { endConditionY = undefined != endPoint.y }
+        if (deviate) {
+          endConditionY = undefined != endPointRange.y[0] && undefined != endPointRange.y[1]
+        } else {
+          endConditionY = undefined != endPoint.y
+        }
 
         if (startPoint.x && endPoint.x && startY != undefined && endConditionY) {
           // if both start and end are well-defined add their line as a series
-          addTargetToChartData(graphData, opt, deviate, startPoint, endPoint, startPointRange, endPointRange)
+          addTargetToChartData(
+            graphData,
+            opt,
+            deviate,
+            startPoint,
+            endPoint,
+            startPointRange,
+            endPointRange
+          )
         }
       },
 
       // updates only the horizontal target lines as this is implemented through dynamic annotations
       // should only be called after the chart has been rendered or before the chart has been created
       updateNonSlopeTarget() {
-        if (this.targetAdded) {  // first, if there already is a target line remove it
+        if (this.targetAdded) {
+          // first, if there already is a target line remove it
           this.$refs.levumiChart.removeAnnotation('target-annotation') // line for target itself
           this.$refs.levumiChart.removeAnnotation('target-range-annotation') // range for allowed deviation
           this.targetAdded = false
         }
         if (this.targetValid && !this.targetIsSlopeVariant) {
-          const y2 = (this.deviationIsEnabled && this.deviationVal > 0) ? this.targetVal - this.targetVal * (this.deviationVal / 100) : null
-          this.$refs.levumiChart.addYaxisAnnotation(targetRangeAnnotationOptions(this.targetVal, y2))
+          const y2 =
+            this.deviationIsEnabled && this.deviationVal > 0
+              ? this.targetVal - this.targetVal * (this.deviationVal / 100)
+              : null
+          this.$refs.levumiChart.addYaxisAnnotation(
+            targetRangeAnnotationOptions(this.targetVal, y2)
+          )
           this.$refs.levumiChart.addYaxisAnnotation(targetAnnotationOptions(this.targetVal))
-          this.targetAdded = true  // necessary to keep track of because apexchart.removeAnnotation will fail if called without any dynamically added annotations
+          this.targetAdded = true // necessary to keep track of because apexchart.removeAnnotation will fail if called without any dynamically added annotations
         }
       },
 
       /** Used in cases where the chart has already been rendered and only the target related data needs to be updated. */
       redrawTarget() {
-        if (this.targetIsEnabled) { this.updateView(false) }
+        if (this.targetIsEnabled) {
+          this.updateView(false)
+        }
       },
 
       has_results(student) {
@@ -702,18 +800,26 @@
         this.targetVal = targetVal
         this.dateUntilVal = dateUntilVal
         this.deviationVal = deviationVal
-        if (redraw) { this.redrawTarget() }
+        if (redraw) {
+          this.redrawTarget()
+        }
       },
 
+      /** Restores the target values to the latest state known to the database.
+       * For individuals who have no own targets set yet the values of the group target are used here instead.
+       * The assumption behind this is that when teachers haven't set a different target for an individual
+       * they'd prefer to see the group target being applied instead of seeing no target at all. */
       restoreTarget(redraw = true) {
-        this.setTarget(this.targetValStored, this.dateUntilStored, this.deviationStored, redraw)
+        this.setTarget(this.targetValStoredInclGroup, this.dateUntilStoredInclGroup, this.deviationStoredInclGroup, redraw)
       },
 
       expandXAxis(graphData) {
         // if an end date has been chosen make sure the x-axis reaches/includes this date
         // SIDE-FACT: technically expanding the x-axis isn't necessary when there's a slope target or an extrapolated trend
         //            as these automatically lead to this effect themselves, but I don't think we should check for that here
-        if (!this.dateUntilIsEnabled || !this.dateUntilVal) { return }
+        if (!this.dateUntilIsEnabled || !this.dateUntilVal) {
+          return
+        }
         // only use the date if it lies after the last test result
         const maxDate = graphData[0]?.data.reduce((acc, d) => {
           return d.x > acc ? d.x : acc
@@ -726,9 +832,7 @@
       },
 
       async loadStudentTargets() {
-        const res = await ajax(
-            apiRoutes.targets.getStudentTargets(this.group.id, this.test.id)
-        )
+        const res = await ajax(apiRoutes.targets.getStudentTargets(this.group.id, this.test.id))
         if (res.status === 200) {
           const text = await res.text()
           const result = JSON.parse(text)

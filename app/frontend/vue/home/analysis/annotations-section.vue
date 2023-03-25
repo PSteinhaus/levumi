@@ -34,11 +34,25 @@
           </div>
           <div class="col-12 col-md-4">
             <div class="d-flex flex-row">
-              <b-form-select
-                v-model="annotationCategoryId"
-                :options="getAnnotationOptions()"
-                size="sm"
-              ></b-form-select>
+              <b-dropdown v-model="annotationCategoryId" variant="outline-secondary">
+                <template #button-content>
+                  <span class="text-small">{{ getAnnotationLabel(annotationCategoryId) }}</span>
+                </template>
+                <b-dropdown-group
+                  v-for="(categoryGroup, index) in groupedAnnotationOptions"
+                  :key="index"
+                >
+                  <b-dropdown-item
+                    v-for="option in categoryGroup"
+                    :key="option.name"
+                    class="text-small"
+                    @click="annotationCategoryId = option.id"
+                  >
+                    {{ option.name }}
+                  </b-dropdown-item>
+                  <b-dropdown-divider />
+                </b-dropdown-group>
+              </b-dropdown>
               <span
                 v-b-popover.hover="
                   'Fehlt ein Anmerkungstyp? Bitte wenden Sie sich an das Support-Team.'
@@ -57,18 +71,18 @@
           <div class="col-12 col-md-4">
             <div class="d-flex flex-row">
               <b-form-checkbox
-                  v-model="annotationIsTrendThreshold"
-                  :disabled="annotationStart !== annotationEnd"
-                  size="sm"
+                v-model="annotationIsTrendThreshold"
+                :disabled="annotationStart !== annotationEnd"
+                size="sm"
               ></b-form-checkbox>
               <span
-                  v-b-popover.hover="
+                v-b-popover.hover="
                   'Umfasst eine Anmerkung nur ein einziges Datum, so können Trends für die Bereiche ' +
-                   'vor und nach der Anmerkung erstellt werden.'
+                  'vor und nach der Anmerkung erstellt werden.'
                 "
-                  style="font-size: 1rem"
-                  class="ml-2 mt-1"
-              ><i class="fas fa-circle-question"></i
+                style="font-size: 1rem"
+                class="ml-2 mt-1"
+                ><i class="fas fa-circle-question"></i
               ></span>
             </div>
           </div>
@@ -99,7 +113,9 @@
             <td>{{ printDate(a.start) }}</td>
             <td>{{ printDate(a.end) }}</td>
             <td>{{ getAnnotationLabel(a.annotation_category_id) }}</td>
-            <td v-if="trendIsEnabled"><i :class="a.trend_threshold ? 'fas fa-check' : 'fas fa-xmark'"></i></td>
+            <td v-if="trendIsEnabled">
+              <i :class="a.trend_threshold ? 'fas fa-check' : 'fas fa-xmark'"></i>
+            </td>
             <td v-if="!readOnly" class="annotation-action-button">
               <b-button variant="outline-danger" class="btn-sm" @click="deleteAnnotation(a.id)">
                 <i class="fas fa-trash"></i> Löschen
@@ -109,7 +125,7 @@
         </tbody>
       </table>
     </b-collapse>
-    <confirm-dialog ref="confirmDialog"/>
+    <confirm-dialog ref="confirmDialog" />
   </div>
 </template>
 
@@ -144,8 +160,12 @@
     },
     computed: {
       visible: {
-        get() { return this.annotationControlVisible },
-        set(value) { this.$emit('update:annotationControlVisible', value) },
+        get() {
+          return this.annotationControlVisible
+        },
+        set(value) {
+          this.$emit('update:annotationControlVisible', value)
+        },
       },
       currentAnnotations: function () {
         return this.annotations.filter(annotation => {
@@ -156,6 +176,23 @@
           )
         })
       },
+      minCategoryId: function () {
+        return getAnnotationOptions().reduce((acc, option) => Math.min(acc, option.id), Infinity)
+      },
+
+      groupedAnnotationOptions: function () {
+        const allOptions = getAnnotationOptions()
+        const maxGroupValue = allOptions.reduce((acc, option) => Math.max((acc, option.group)), 0)
+        const groups = []
+        for (let i = 1; i <= maxGroupValue; i++) {
+          groups[i - 1] = allOptions.filter(option => option.group === i)
+        }
+
+        return groups
+      },
+    },
+    mounted: function () {
+      this.annotationCategoryId = this.minCategoryId
     },
 
     methods: {
@@ -208,7 +245,7 @@
           const parsedResult = await res.json()
           this.$root.$emit(`annotation-added-${this.group.id}`, parsedResult)
           this.annotationIsTrendThreshold = false
-          this.annotationCategoryId = 1
+          this.annotationCategoryId = this.minCategoryId
           this.annotationEnd = null
           this.annotationStart = null
         }

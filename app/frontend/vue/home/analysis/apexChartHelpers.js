@@ -111,8 +111,7 @@ export const apexChartOptions = weekLabels => ({
     },
     tooltip: {
       ...commonTooltip(),
-      enabled: true,
-      x: { show: false },
+      custom: customSharedTooltip,
     },
     xaxis: {
       tooltip: { enabled: false },
@@ -153,8 +152,7 @@ export const apexChartOptions = weekLabels => ({
     },
     tooltip: {
       ...commonTooltip(),
-      enabled: true,
-      x: {show: false},
+      custom: customSharedTooltip
     },
     xaxis: {
       tooltip: { enabled: false },
@@ -264,9 +262,44 @@ const commonGrid = () => ({
 })
 
 const commonTooltip = () => ({
+  enabled: true,
   shared: true,
   intersect: false
 })
+
+/** credit goes to @Splinter0 on github: https://github.com/apexcharts/apexcharts.js/issues/420#issuecomment-1047056648*/
+function customSharedTooltip({ series, seriesIndex, dataPointIndex, w }) {
+  const hoverXaxis = w.globals.seriesX[seriesIndex][dataPointIndex];
+  const hoverIndexes = w.globals.seriesX.map((seriesX) => {
+    return seriesX.findIndex((xData) => xData === hoverXaxis);
+  });
+
+  let hoverList = "";
+  hoverIndexes.forEach((hoverIndex, seriesEachIndex) => {
+    if (hoverIndex >= 0) {
+      hoverList += `
+                        <div class="apexcharts-tooltip-series-group apexcharts-active" style="order: 1; display: flex;">
+                            <span class="apexcharts-tooltip-marker" style="background-color: ${
+          w.globals.markers.colors[seriesEachIndex]
+      };"></span>
+                            <div class="apexcharts-tooltip-text" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;">
+                                <div class="apexcharts-tooltip-y-group">
+                                    <span class="apexcharts-tooltip-text-y-label">${
+          w.globals.seriesNames[seriesEachIndex]
+      }: </span>
+                                    <span class="apexcharts-tooltip-text-y-value">${w.globals.yLabelFormatters[0](
+          series[seriesEachIndex][hoverIndex]
+      )}</span>
+                                </div>
+                            </div>
+                        </div>`;
+    }
+  });
+  const date = new Date(hoverXaxis).toLocaleDateString('de')
+  return `<div class="apexcharts-tooltip-title" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;">${
+      date
+  }</div>${hoverList}`;
+}
 
 const apexColors = () => [
   '#449DD1',
