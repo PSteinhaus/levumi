@@ -196,7 +196,7 @@
   export default {
     name: 'AnalysisView',
     components: { AnnotationsSection, TargetControls },
-    inject: ['readOnly', 'studentName', 'weeks', 'student_name_parts', 'printDate'],
+    inject: ['studentName', 'weeks', 'student_name_parts', 'printDate'],
     provide: function () {
       return {
         restoreTarget: this.restoreTarget, // allowing the target controls to restore and set the target themselves
@@ -328,13 +328,14 @@
       isTaskLevelChart() {
         return Boolean(this.viewConfig.isTaskLevelChart)
       },
+      isReadOnlySuppressed() {
+        return Boolean(this.viewConfig.readOnlySuppressed)
+      },
       targetIsSlopeVariant() {
-        //return Boolean(this.viewConfig.targetOptions?.type === 'slope')
-        return true
+        return Boolean(this.viewConfig.targetOptions?.type === 'slope')
       },
       targetIsEnabled() {
-        //return !this.viewConfig.series_keys && Boolean(this.viewConfig.targetOptions?.enabled)
-        return true
+        return !this.viewConfig.series_keys && Boolean(this.viewConfig.targetOptions?.enabled)
       },
       dateUntilIsEnabled() {
         // if a slope target is to be shown then we need dateUntil anyway
@@ -344,16 +345,13 @@
         )
       },
       deviationIsEnabled() {
-        //return Boolean(this.viewConfig.targetOptions?.selectDeviation)
-        return true
+        return Boolean(this.viewConfig.targetOptions?.selectDeviation)
       },
       trendIsEnabled() {
-        //return Boolean(this.viewConfig.trendOptions?.enabled)
-        return true
+        return Boolean(this.viewConfig.trendOptions?.enabled)
       },
       extrapolationIsEnabled() {
-        //return Boolean(this.viewConfig.trendOptions?.extrapolate)
-        return true
+        return Boolean(this.viewConfig.trendOptions?.extrapolate)
       },
       deviationStored() {
         return this.targetStored?.deviation || null
