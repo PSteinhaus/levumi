@@ -618,7 +618,7 @@
 
         // get annotations that need to be drawn in the current chart
         const applicableAnnotations = this.annotations.filter(
-          annotation => annotation.view === this.selectedView && annotation.student_id === studentId
+          annotation => annotation.view === this.selectedView && (annotation.student_id === studentId || annotation.student_id === null)
         )
 
         const xaxis = applicableAnnotations
@@ -626,7 +626,7 @@
             annotation =>
               annotation.view === this.selectedView &&
               (annotation.start !== annotation.end ||
-                (studentId === null && annotation.start === annotation.end))
+                (annotation.student_id === null && annotation.start === annotation.end))
           )
           .map(annotation => annotationsLineOptions(annotation, this.weeks))
 
@@ -635,7 +635,7 @@
             annotation =>
               annotation.view === this.selectedView &&
               annotation.start === annotation.end &&
-              studentId !== null
+                annotation.student_id !== null
           )
           .map(annotation => {
             const dataForAnnotation = this.graphData[0].data.find(d => d.x === annotation.start)
