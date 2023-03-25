@@ -39,9 +39,6 @@ export const prepareOptions = (chartType, customOptions, weeks, isSlope, targetI
   if (needRangeAreaChart) {
     options.chart.type = 'rangeArea'
   }
-  if (chartType === 'taskLevelLine') {
-    options.chart.type = 'line'
-  }
   // for updates on a chart animations may be inadequate
   options.chart.animations.enabled = animate
 
