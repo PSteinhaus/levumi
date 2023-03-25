@@ -2,6 +2,9 @@
   <div id="target-controls">
     <b-collapse v-if="targetIsEnabled" id="target_collapse" v-model="visible">
       <b-form v-if="!readOnly" class="border p-3" accept-charset="UTF-8" onsubmit="return false">
+        <b-alert :show="selectedStudentId !== -1 && storedIsNull" variant="info" class="d-inline-block">
+          Hinweis: Die gezeigten Werte wurden aus der Klassenansicht übernommen. Wenn Sie hier andere Werte eintragen und speichern, so gelten sie ausschließlich für diese Schüler*in.
+        </b-alert>
         <div class="text-small row">
           <div class="col-12 col-md-3 col-xl-2">
             <label>Zielwert:</label>

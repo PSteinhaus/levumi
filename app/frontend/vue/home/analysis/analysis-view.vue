@@ -381,6 +381,31 @@
           .find(target => target.student_id === sId && target.view === this.viewConfig?.key)
         return res === undefined ? null : res
       },
+      /** Returns the stored target INCLUDING THE GROUP TARGET.
+       * So when there's no individual target, but a group target, the latter is returned, else 'null' */
+      targetStoredInclGroup() {
+        if (this.targetStored !== null) {
+          return this.targetStored
+        }
+        const groupTarget = this.studentTargets
+            .find(target => target.student_id === null && target.view === this.viewConfig?.key)
+        return groupTarget === undefined ? null : groupTarget
+      },
+      /** Returns the deviation value of stored target INCLUDING THE GROUP TARGET.
+       * So when there's no individual target, but a group target, the latter is returned, else 'null' */
+      deviationStoredInclGroup() {
+        return this.targetStoredInclGroup?.deviation || null
+      },
+      /** Returns the date value of the stored target INCLUDING THE GROUP TARGET.
+       * So when there's no individual target, but a group target, the latter is returned, else 'null' */
+      dateUntilStoredInclGroup() {
+        return this.targetStoredInclGroup?.date_until || null
+      },
+      /** Returns the numerical value of stored target INCLUDING THE GROUP TARGET.
+       * So when there's no individual target, but a group target, the latter is returned, else 'null' */
+      targetValStoredInclGroup() {
+        return this.targetStoredInclGroup?.value || null
+      },
       testData() {
         return this.testsStore.tests
             .find(area => area.id === this.test.area_id).competences
@@ -779,8 +804,12 @@
         }
       },
 
+      /** Restores the target values to the latest state known to the database.
+       * For individuals who have no own targets set yet the values of the group target are used here instead.
+       * The assumption behind this is that when teachers haven't set a different target for an individual
+       * they'd prefer to see the group target being applied instead of seeing no target at all. */
       restoreTarget(redraw = true) {
-        this.setTarget(this.targetValStored, this.dateUntilStored, this.deviationStored, redraw)
+        this.setTarget(this.targetValStoredInclGroup, this.dateUntilStoredInclGroup, this.deviationStoredInclGroup, redraw)
       },
 
       expandXAxis(graphData) {
