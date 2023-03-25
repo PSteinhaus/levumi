@@ -190,7 +190,7 @@
   export default {
     name: 'AnalysisView',
     components: { AnnotationsSection, TargetControls },
-    inject: ['autoScroll', 'readOnly', 'studentName', 'weeks', 'student_name_parts', 'printDate'],
+    inject: ['readOnly', 'studentName', 'weeks', 'student_name_parts', 'printDate'],
     provide: function () {
       return {
         restoreTarget: this.restoreTarget, // allowing the target controls to restore and set the target themselves

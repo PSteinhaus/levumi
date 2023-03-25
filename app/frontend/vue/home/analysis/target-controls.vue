@@ -109,7 +109,6 @@
   import apiRoutes from '../../routes/api-routes'
   import { ajax } from '@/utils/ajax'
   import ConfirmDialog from '../../shared/confirm-dialog.vue'
-  import { printDate } from '../../../utils/date'
 
   export default {
     name: 'TargetControls',
