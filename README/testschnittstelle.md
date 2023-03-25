@@ -123,6 +123,15 @@ In der test.json werden die Metadaten des Tests definiert. Folgende Felder müss
     - `series_keys`: Array aus Texten, analog zu `column_keys`
     - `series`: Array aus Texten, analog zu `column`
     - `options`: optional, für `bar` und `graph` können hier ergänzende Optionen für die Darstellung hinterlegt werden. Für die Visualisierung wird das Paket `apexcharts` verwendet. Die Dokumentation findet sich hier: https://apexcharts.com/docs/options/annotations/
+    - `targetOptions`: optional, ermöglicht Anzeigen von Zielwerten und deren Einstellung durch die Nutzer.
+      - `enabled`: Boolean, true, falls Zielwerte eingestellt und gezeigt werden können sollen
+      - `type`: entweder `horizontal`, für eine horizontale Zielschwelle, oder `slope` für einen Anstieg vom ersten Testwert hin zum angegebenen Zielwert
+      - `selectEndDate`: Boolean, true, falls der dargestellte Zeitraum eingestellt werden können soll.
+      - `selectDeviation`: Boolean, true, falls ein Bereich unter dem eigentlichen Ziel eingestellt werden können soll, der etwa den Bereich noch erlaubter Abweichungen vom Ziel visualisieren kann.
+    - `trendOptions`: optional, ermöglicht die Darstellung von Ausgleichsgeraden durch Datenpunkte in einem Liniendiagramm
+      - `enabled`: Boolean, true, falls Trendlinien (Ausgleichsgeraden) angezeigt werden sollen
+      - `extrapolation`: Boolean, true, falls die letzte Trendlinie bis zum angegebenen Enddatum des Diagramms extrapoliert werden soll, um den Trend für die Zukunft weiterzuzeichnen. Nur relevant falls `selectEndDate` auf true gesetzt ist.
+    - `isTaskLevelChart`: optional, Boolean, true, falls die Auswertung in einem auf Niveaustufen ausgelegten Sonderformat stattfinden soll (noch in der Entwicklung!). Nur `graph` wird aktuell unterstützt.
 - `items`: Objekt mit einem Key/Value-Paar pro Test-Item. Der Key ist dabei die Id des Test-Items in der `test.js`, Value entspricht i. d. R. der `description`
 
 ## Dokumentation Fördermaterial
