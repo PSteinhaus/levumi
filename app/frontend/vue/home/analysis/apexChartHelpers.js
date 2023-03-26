@@ -241,6 +241,7 @@ const commonOptions = () => ({
   yaxis: {
     min: 0,
     forceNiceScale: true,
+    formatter: val => val.toFixed(2) // to avoid ticks with more than 10 decimal places that sometimes come up else
   },
 })
 
