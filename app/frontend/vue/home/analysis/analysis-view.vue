@@ -580,8 +580,9 @@
                 gData[0]?.data,
                 this.extrapolationIsEnabled ? this.dateUntilVal : null,
                 this.annotations.filter(
-                  a =>
-                    a.trend_threshold && a.student_id === student.id && a.view === this.selectedView
+                  a => a.trend_threshold
+                      && (a.student_id === student.id || a.student_id === null)
+                      && a.view === this.selectedView
                 )
               )
             }
