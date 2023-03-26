@@ -876,14 +876,14 @@
       /***
        * Adds event listeners to the y-axis labels to show examples of tasks at levels corresponding to the label.
        * These examples are shown as images when users hover over a label.
-       * @param _chartContext
-       * @param _config
        */
       addTaskLevelListeners() {
-        document.querySelectorAll('.apexcharts-yaxis-label').forEach(item => {
-          item.addEventListener("mousemove", this.showTaskExample)
-          item.addEventListener("mouseleave", this.hideTaskExample)
-        })
+        if (this.isTaskLevelChart) {
+          document.querySelectorAll('.apexcharts-yaxis-label').forEach(item => {
+            item.addEventListener("mousemove", this.showTaskExample)
+            item.addEventListener("mouseleave", this.hideTaskExample)
+          })
+        }
       },
     },
   }
