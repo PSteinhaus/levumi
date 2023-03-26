@@ -1,6 +1,6 @@
 <template>
   <div id="target-controls">
-    <b-collapse v-if="targetIsEnabled" id="target_collapse" v-model="visible">
+    <b-collapse v-if="targetIsEnabled || dateUntilIsEnabled" id="target_collapse" v-model="visible">
       <b-form
           v-if="!readOnly || readonlySuppressed"
           class="border p-3"
@@ -10,7 +10,7 @@
         <b-alert :show="selectedStudentId !== -1 && storedIsNull" variant="info" class="d-inline-block">
           Hinweis: Die gezeigten Werte wurden aus der Klassenansicht übernommen. Wenn Sie hier andere Werte eintragen und speichern, so gelten sie ausschließlich für diese Schüler*in.
         </b-alert>
-        <div class="text-small row">
+        <div v-if="targetIsEnabled" class="text-small row">
           <div class="col-12 col-md-3 col-xl-2">
             <label>Zielwert:</label>
           </div>
@@ -49,7 +49,7 @@
             ></b-form-input>
           </div>
         </div>
-        <div v-if="deviationIsEnabled" class="text-small row mt-2 mb-2">
+        <div v-if="deviationIsEnabled && targetIsEnabled" class="text-small row mt-2 mb-2">
           <div class="col-12 col-md-3 col-xl-2">
             <label>Erlaubte Abweichung:</label>
           </div>
@@ -149,7 +149,7 @@
     },
     computed: {
       multipleValues() {
-        return this.dateUntilIsEnabled || this.deviationIsEnabled
+        return (this.dateUntilIsEnabled || this.deviationIsEnabled) && this.targetIsEnabled
       },
       storedIsNull() {
         return (

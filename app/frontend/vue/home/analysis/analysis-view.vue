@@ -82,7 +82,7 @@
               ></i>
             </b-button>
             <b-button
-              v-if="targetIsEnabled"
+              v-if="targetIsEnabled || dateUntilIsEnabled"
               id="target_btn"
               class="ml-2"
               :aria-expanded="targetControlVisible ? 'true' : 'false'"
@@ -354,10 +354,12 @@
         return Boolean(this.viewConfig.trendOptions?.extrapolate)
       },
       deviationStored() {
-        return this.targetStored?.deviation || null
+        const dev = this.targetStored?.deviation
+        return dev === undefined ? null : dev
       },
       dateUntilStored() {
-        return this.targetStored?.date_until || null
+        const date = this.targetStored?.date_until
+        return date === undefined ? null : date
       },
       targetAndTimeValid() {
         return this.targetValid && this.dateUntilVal
@@ -371,7 +373,8 @@
         )
       },
       targetValStored() {
-        return this.targetStored?.value || null
+        const val = this.targetStored?.value
+        return val === undefined ? null : val
       },
       targetStored() {
         // when no target is defined return null (nothing stored)
@@ -393,17 +396,20 @@
       /** Returns the deviation value of stored target INCLUDING THE GROUP TARGET.
        * So when there's no individual target, but a group target, the latter is returned, else 'null' */
       deviationStoredInclGroup() {
-        return this.targetStoredInclGroup?.deviation || null
+        const dev = this.targetStoredInclGroup?.deviation
+        return dev === undefined ? null : dev
       },
       /** Returns the date value of the stored target INCLUDING THE GROUP TARGET.
        * So when there's no individual target, but a group target, the latter is returned, else 'null' */
       dateUntilStoredInclGroup() {
-        return this.targetStoredInclGroup?.date_until || null
+        const date = this.targetStoredInclGroup?.date_until
+        return date === undefined ? null : date
       },
       /** Returns the numerical value of stored target INCLUDING THE GROUP TARGET.
        * So when there's no individual target, but a group target, the latter is returned, else 'null' */
       targetValStoredInclGroup() {
-        return this.targetStoredInclGroup?.value || null
+        const val = this.targetStoredInclGroup?.value
+        return val === undefined ? null : val
       },
       testData() {
         return this.testsStore.tests
@@ -500,7 +506,8 @@
             return { x: formatDate ? printDate(week) : week, y: null }
           }
           let point = this.XYFromResult(currentResult, seriesKey, formatDate)
-          point.y = point.y?.toFixed(2) || null
+          point.y = point.y?.toFixed(2)
+          if (point.y === undefined) { point.y = null }
           return point
         })
       },
@@ -511,10 +518,11 @@
         let yVal
         const view = this.viewConfig
         if (seriesKey) {
-          yVal = result?.views[view.key][seriesKey] || null
+          yVal = result?.views[view.key][seriesKey]
         } else {
-          yVal = result?.views[view.key] || null
+          yVal = result?.views[view.key]
         }
+        if (yVal === undefined) { yVal = null }
         return {
           x: formatDate ? printDate(result.test_week) : result.test_week || null,
           y: yVal,
