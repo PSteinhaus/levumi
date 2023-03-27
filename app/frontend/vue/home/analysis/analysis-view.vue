@@ -868,9 +868,10 @@
       showTaskExample(evt) {
         const tooltip = document.getElementById("task_level_tooltip");
         // find the corresponding example image for the level
-        const exampleImg = this.attachedLevelImages.find(a => a.filename === "Niveau_" + Math.round(evt.target.innerHTML) + ".png")
-        if (exampleImg !== undefined) {
-          tooltip.innerHTML = "<p>Beispielaufgabe Niveau "+ Math.round(evt.target.innerHTML) + ":</p><img src=" + exampleImg.filepath + " style='width: 300px'>"
+        const exampleImgs = this.attachedLevelImages.filter(a => a.filename.startsWith("Niveau_" + Math.round(evt.target.innerHTML)))
+        if (exampleImgs.length > 0) {
+          const exampleImg = exampleImgs[Math.floor(Math.random() * exampleImgs.length)]
+          tooltip.innerHTML = "<p>Beispielaufgabe Niveau "+ Math.round(evt.target.innerHTML) + ":</p><img src=" + exampleImg.filepath + " style='max-width: 500px; max-height: 450px'>"
           tooltip.style.display = "block"
           tooltip.style.left = evt.x + 20 + 'px'
           tooltip.style.top = evt.y + 'px'
@@ -889,7 +890,7 @@
       addTaskLevelListeners() {
         if (this.isTaskLevelChart) {
           document.querySelectorAll('.apexcharts-yaxis-label').forEach(item => {
-            item.addEventListener("mousemove", this.showTaskExample)
+            item.addEventListener("mouseover", this.showTaskExample)
             item.addEventListener("mouseleave", this.hideTaskExample)
           })
         }

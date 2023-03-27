@@ -223,10 +223,10 @@ const commonTaskLevelOptions = () => ({
     labels: {
       style: {
         colors: ['#5a598c'],
-        fontSize: '16px',
+        fontSize: '20px',
         fontWeight: 'bold',
       },
-      formatter: val => val.toFixed(0) // levels are always natural numbers
+      formatter: val => val === null ? 'null' : Number(val).toFixed(0) // levels are always natural numbers
     }
   },
 })
@@ -245,7 +245,7 @@ const commonOptions = () => ({
     min: 0,
     forceNiceScale: true,
     labels: {
-      formatter: val => Number(val).toFixed(2) // to avoid ticks with more than 10 decimal places that sometimes come up else
+      formatter: val => val === null ? 'null' : Number(val).toFixed(2) // to avoid ticks with more than 10 decimal places that sometimes come up else
     }
   },
 })
