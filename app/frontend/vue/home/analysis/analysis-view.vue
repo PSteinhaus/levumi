@@ -792,7 +792,7 @@
 
       /** Used in cases where the chart has already been rendered and only the target related data needs to be updated. */
       redrawTarget() {
-        if (this.targetIsEnabled) {
+        if (this.targetIsEnabled || this.dateUntilIsEnabled) {
           this.updateView(false)
         }
       },

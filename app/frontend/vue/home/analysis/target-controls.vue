@@ -2,7 +2,6 @@
   <div id="target-controls">
     <b-collapse v-if="targetIsEnabled || dateUntilIsEnabled" id="target_collapse" v-model="visible">
       <b-form
-          v-if="!readOnly || readonlySuppressed"
           class="border p-3"
           accept-charset="UTF-8"
           onsubmit="return false"
@@ -27,6 +26,7 @@
               step="0.01"
               lang="de"
               size="sm"
+              :disabled="readOnly && !readonlySuppressed"
               @update="setTarget($event, dateUntilVal, deviationVal, true)"
             ></b-form-input>
           </div>
@@ -45,6 +45,7 @@
               type="date"
               lang="de"
               size="sm"
+              :disabled="readOnly && !readonlySuppressed"
               @update="setTarget(targetVal, $event, deviationVal, true)"
             ></b-form-input>
           </div>
@@ -68,12 +69,13 @@
                 step="1"
                 lang="de"
                 size="sm"
+                :disabled="readOnly && !readonlySuppressed"
                 @update="setTarget(targetVal, dateUntilVal, $event, true)"
               ></b-form-input>
             </b-input-group>
           </div>
         </div>
-        <div class="mt-3">
+        <div v-if="!readOnly || readonlySuppressed" class="mt-3">
           <b-button
             variant="outline-success"
             size="sm"
