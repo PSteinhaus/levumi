@@ -164,9 +164,7 @@
         :items="simpleTableData"
       ></b-table-lite>
     </b-row>
-    <div id="task_level_tooltip">
-
-    </div>
+    <div id="task_level_tooltip"></div>
   </div>
 </template>
 
@@ -191,7 +189,7 @@
   import { createTrendline } from './linearRegressionHelpers'
   import { computed } from 'vue'
   import TargetControls from './target-controls.vue'
-  import { useTestsStore}  from '@/store/testsStore';
+  import { useTestsStore } from '@/store/testsStore'
 
   export default {
     name: 'AnalysisView',
@@ -389,8 +387,9 @@
         if (this.targetStored !== null) {
           return this.targetStored
         }
-        const groupTarget = this.studentTargets
-            .find(target => target.student_id === null && target.view === this.viewConfig?.key)
+        const groupTarget = this.studentTargets.find(
+          target => target.student_id === null && target.view === this.viewConfig?.key
+        )
         return groupTarget === undefined ? null : groupTarget
       },
       /** Returns the deviation value of stored target INCLUDING THE GROUP TARGET.
@@ -413,13 +412,14 @@
       },
       testData() {
         return this.testsStore.tests
-            .find(area => area.id === this.test.area_id).competences
-            ?.find(competence => competence.id === this.test.competence_id).test_families
-            ?.find(family => family.id === this.test.test_family_id).tests
-            ?.find(test => test.id === this.test.id)
+          .find(area => area.id === this.test.area_id)
+          .competences?.find(competence => competence.id === this.test.competence_id)
+          .test_families?.find(family => family.id === this.test.test_family_id)
+          .tests?.find(test => test.id === this.test.id)
       },
       attachedLevelImages() {
-        return this.testData?.info_attachments.filter(attachment =>
+        return this.testData?.info_attachments.filter(
+          attachment =>
             attachment.content_type.startsWith('image') && attachment.filename.startsWith('Niveau')
         )
       },
@@ -507,7 +507,9 @@
           }
           let point = this.XYFromResult(currentResult, seriesKey, formatDate)
           point.y = point.y?.toFixed(2)
-          if (point.y === undefined) { point.y = null }
+          if (point.y === undefined) {
+            point.y = null
+          }
           return point
         })
       },
@@ -522,7 +524,9 @@
         } else {
           yVal = result?.views[view.key]
         }
-        if (yVal === undefined) { yVal = null }
+        if (yVal === undefined) {
+          yVal = null
+        }
         return {
           x: formatDate ? printDate(result.test_week) : result.test_week || null,
           y: yVal,
@@ -588,9 +592,10 @@
                 gData[0]?.data,
                 this.extrapolationIsEnabled ? this.dateUntilVal : null,
                 this.annotations.filter(
-                  a => a.trend_threshold
-                      && (a.student_id === student.id || a.student_id === null)
-                      && a.view === this.selectedView
+                  a =>
+                    a.trend_threshold &&
+                    (a.student_id === student.id || a.student_id === null) &&
+                    a.view === this.selectedView
                 )
               )
             }
@@ -651,7 +656,9 @@
 
         // get annotations that need to be drawn in the current chart
         const applicableAnnotations = this.annotations.filter(
-          annotation => annotation.view === this.selectedView && (annotation.student_id === studentId || annotation.student_id === null)
+          annotation =>
+            annotation.view === this.selectedView &&
+            (annotation.student_id === studentId || annotation.student_id === null)
         )
 
         const xaxis = applicableAnnotations
@@ -668,7 +675,7 @@
             annotation =>
               annotation.view === this.selectedView &&
               annotation.start === annotation.end &&
-                annotation.student_id !== null
+              annotation.student_id !== null
           )
           .map(annotation => {
             const dataForAnnotation = this.graphData[0].data.find(d => d.x === annotation.start)
@@ -817,7 +824,12 @@
        * The assumption behind this is that when teachers haven't set a different target for an individual
        * they'd prefer to see the group target being applied instead of seeing no target at all. */
       restoreTarget(redraw = true) {
-        this.setTarget(this.targetValStoredInclGroup, this.dateUntilStoredInclGroup, this.deviationStoredInclGroup, redraw)
+        this.setTarget(
+          this.targetValStoredInclGroup,
+          this.dateUntilStoredInclGroup,
+          this.deviationStoredInclGroup,
+          redraw
+        )
       },
 
       expandXAxis(graphData) {
@@ -865,21 +877,28 @@
       },
 
       showTaskExample(evt) {
-        const tooltip = document.getElementById("task_level_tooltip");
+        const tooltip = document.getElementById('task_level_tooltip')
         // find the corresponding example image for the level
-        const exampleImgs = this.attachedLevelImages.filter(a => a.filename.startsWith("Niveau_" + Math.round(evt.target.innerHTML)))
+        const exampleImgs = this.attachedLevelImages.filter(a =>
+          a.filename.startsWith('Niveau_' + Math.round(evt.target.innerHTML))
+        )
         if (exampleImgs.length > 0) {
           const exampleImg = exampleImgs[Math.floor(Math.random() * exampleImgs.length)]
-          tooltip.innerHTML = "<p>Beispielaufgabe Niveau "+ Math.round(evt.target.innerHTML) + ":</p><img src=" + exampleImg.filepath + " style='max-width: 500px; max-height: 450px'>"
-          tooltip.style.display = "block"
+          tooltip.innerHTML =
+            '<p>Beispielaufgabe Niveau ' +
+            Math.round(evt.target.innerHTML) +
+            ':</p><img src=' +
+            exampleImg.filepath +
+            " style='max-width: 500px; max-height: 450px'>"
+          tooltip.style.display = 'block'
           tooltip.style.left = evt.x + 20 + 'px'
           tooltip.style.top = evt.y + 'px'
         }
       },
 
       hideTaskExample() {
-        var tooltip = document.getElementById("task_level_tooltip")
-        tooltip.style.display = "none"
+        var tooltip = document.getElementById('task_level_tooltip')
+        tooltip.style.display = 'none'
       },
 
       /***
@@ -889,8 +908,8 @@
       addTaskLevelListeners() {
         if (this.isTaskLevelChart) {
           document.querySelectorAll('.apexcharts-yaxis-label').forEach(item => {
-            item.addEventListener("mouseover", this.showTaskExample)
-            item.addEventListener("mouseleave", this.hideTaskExample)
+            item.addEventListener('mouseover', this.showTaskExample)
+            item.addEventListener('mouseleave', this.hideTaskExample)
           })
         }
       },
@@ -899,16 +918,16 @@
 </script>
 
 <style>
-#task_level_tooltip {
-  background-color: white;
-  border: 2px solid #5a598c;
-  border-radius: 4px;
-  padding: 5px;
-  position: fixed;
-  transform: translate(0%, -50%);
-  font-size: 1rem;
-  display: none;
-  z-index: 999;
-  text-align: center;
-}
+  #task_level_tooltip {
+    background-color: white;
+    border: 2px solid #5a598c;
+    border-radius: 4px;
+    padding: 5px;
+    position: fixed;
+    transform: translate(0%, -50%);
+    font-size: 1rem;
+    display: none;
+    z-index: 999;
+    text-align: center;
+  }
 </style>

@@ -1,9 +1,17 @@
 import { getAnnotationLabel } from '../../../utils/helpers'
 import deepmerge from 'deepmerge'
-import isArray from "lodash/isArray";
-import {printDate} from "@/utils/date";
+import isArray from 'lodash/isArray'
+import { printDate } from '@/utils/date'
 
-export const prepareOptions = (chartType, customOptions, weeks, isSlope, targetIsEnabled, animate, isTaskLevelChart) => {
+export const prepareOptions = (
+  chartType,
+  customOptions,
+  weeks,
+  isSlope,
+  targetIsEnabled,
+  animate,
+  isTaskLevelChart
+) => {
   // if any series wants to be of type rangeArea then the whole chart needs to be
   // therefore we need to save the "true" chart type to hand over to all non-rangeArea series (i.e. all except the slope target)
   if (!['line', 'bar', 'rangeArea'].includes(chartType)) {
@@ -11,7 +19,8 @@ export const prepareOptions = (chartType, customOptions, weeks, isSlope, targetI
   }
   let opt
   // only when targets are enabled and a slope target is desired and a line or rangeArea chart, only then use an rangeArea chart
-  const needRangeAreaChart = isSlope && targetIsEnabled && (chartType === 'line' || chartType === 'rangeArea')
+  const needRangeAreaChart =
+    isSlope && targetIsEnabled && (chartType === 'line' || chartType === 'rangeArea')
   const weekLabels = weeks.map(w => printDate(w))
   if (needRangeAreaChart) {
     opt = apexChartOptions(weekLabels).rangeArea
@@ -65,7 +74,7 @@ export const apexChartOptions = weekLabels => ({
     stroke: {
       curve: 'straight',
       width: 0, // must be kept in, as prepareOptionsAsArrays depends upon its existence
-      dashArray: 0 // must be kept in, as prepareOptionsAsArrays depends upon its existence
+      dashArray: 0, // must be kept in, as prepareOptionsAsArrays depends upon its existence
     },
     fill: {
       opacity: 0.9, // must be kept in, as prepareOptionsAsArrays depends upon its existence
@@ -78,7 +87,8 @@ export const apexChartOptions = weekLabels => ({
         left: 15,
       },
     },
-    xaxis: {  // TODO: Optionen hier vielleicht an andere Diagramme anpassen (datetime statt categories)
+    xaxis: {
+      // TODO: Optionen hier vielleicht an andere Diagramme anpassen (datetime statt categories)
       tooltip: { enabled: false },
       type: 'category',
       categories: weekLabels,
@@ -96,7 +106,7 @@ export const apexChartOptions = weekLabels => ({
     stroke: {
       curve: 'straight',
       width: 1, // must be kept in, as prepareOptionsAsArrays depends upon its existence
-      dashArray: 0 // must be kept in, as prepareOptionsAsArrays depends upon its existence
+      dashArray: 0, // must be kept in, as prepareOptionsAsArrays depends upon its existence
     },
     fill: {
       opacity: 0.9, // must be kept in, as prepareOptionsAsArrays depends upon its existence
@@ -122,7 +132,9 @@ export const apexChartOptions = weekLabels => ({
       },
       labels: {
         minHeight: 20,
-        format: 'dd.MM.yyyy',
+        formatter: function (value) {
+          return printDate(value) //opts.dateFormatter(new Date(timestamp)).format('dd MMM')
+        },
       },
     },
   },
@@ -141,7 +153,7 @@ export const apexChartOptions = weekLabels => ({
     stroke: {
       curve: 'straight',
       width: 1, // must be kept in, as prepareOptionsAsArrays depends upon its existence
-      dashArray: 0 // must be kept in, as prepareOptionsAsArrays depends upon its existence
+      dashArray: 0, // must be kept in, as prepareOptionsAsArrays depends upon its existence
     },
     grid: {
       ...commonGrid(),
@@ -152,7 +164,7 @@ export const apexChartOptions = weekLabels => ({
     },
     tooltip: {
       ...commonTooltip(),
-      custom: customSharedTooltip
+      custom: customSharedTooltip,
     },
     xaxis: {
       tooltip: { enabled: false },
@@ -163,7 +175,9 @@ export const apexChartOptions = weekLabels => ({
       },
       labels: {
         minHeight: 20,
-        format: 'dd.MM.yyyy',
+        formatter: function (value) {
+          return printDate(value) //opts.dateFormatter(new Date(timestamp)).format('dd MMM')
+        },
       },
     },
   },
@@ -184,7 +198,7 @@ const commonTaskLevelOptions = () => ({
   stroke: {
     curve: 'straight',
     width: 1, // must be kept in, as prepareOptionsAsArrays depends upon its existence
-    dashArray: 0 // must be kept in, as prepareOptionsAsArrays depends upon its existence
+    dashArray: 0, // must be kept in, as prepareOptionsAsArrays depends upon its existence
   },
   fill: {
     opacity: 0.9, // must be kept in, as prepareOptionsAsArrays depends upon its existence
@@ -211,7 +225,9 @@ const commonTaskLevelOptions = () => ({
     },
     labels: {
       minHeight: 20,
-      format: 'dd.MM.yyyy',
+      formatter: function (value) {
+        return printDate(value) //opts.dateFormatter(new Date(timestamp)).format('dd MMM')
+      },
     },
   },
   yaxis: {
@@ -223,8 +239,8 @@ const commonTaskLevelOptions = () => ({
         fontSize: '20px',
         fontWeight: 'bold',
       },
-      formatter: val => val === null ? 'null' : Number(val).toFixed(0) // levels are always natural numbers
-    }
+      formatter: val => (val === null ? 'null' : Number(val).toFixed(0)), // levels are always natural numbers
+    },
   },
 })
 
@@ -235,15 +251,15 @@ const commonOptions = () => ({
     offsetY: 5,
   },
   markers: {
-    size: 4,  // must be kept in, as prepareOptionsAsArrays depends upon its existence
+    size: 4, // must be kept in, as prepareOptionsAsArrays depends upon its existence
     hover: { sizeOffset: 2 },
   },
   yaxis: {
     min: 0,
     forceNiceScale: true,
     labels: {
-      formatter: val => val === null ? 'null' : Number(val).toFixed(2) // to avoid ticks with more than 10 decimal places that sometimes come up else
-    }
+      formatter: val => (val === null ? 'null' : Number(val).toFixed(2)), // to avoid ticks with more than 10 decimal places that sometimes come up else
+    },
   },
 })
 
@@ -267,41 +283,40 @@ const commonGrid = () => ({
 const commonTooltip = () => ({
   enabled: true,
   shared: true,
-  intersect: false
+  intersect: false,
 })
 
 /** credit goes to @Splinter0 on github: https://github.com/apexcharts/apexcharts.js/issues/420#issuecomment-1047056648*/
 function customSharedTooltip({ series, seriesIndex, dataPointIndex, w }) {
-  const hoverXaxis = w.globals.seriesX[seriesIndex][dataPointIndex];
-  const hoverIndexes = w.globals.seriesX.map((seriesX) => {
-    return seriesX.findIndex((xData) => xData === hoverXaxis);
-  });
+  const hoverXaxis = w.globals.seriesX[seriesIndex][dataPointIndex]
+  const hoverIndexes = w.globals.seriesX.map(seriesX => {
+    return seriesX.findIndex(xData => xData === hoverXaxis)
+  })
 
-  let hoverList = "";
+  let hoverList = ''
   hoverIndexes.forEach((hoverIndex, seriesEachIndex) => {
-    if (hoverIndex >= 0) {
+    // using != null instead of !== null here so that `undefined` is filtered out too
+    if (hoverIndex >= 0 && series[seriesEachIndex][hoverIndex] != null) {
       hoverList += `
                         <div class="apexcharts-tooltip-series-group apexcharts-active" style="order: 1; display: flex;">
                             <span class="apexcharts-tooltip-marker" style="background-color: ${
-          w.globals.markers.colors[seriesEachIndex]
-      };"></span>
+                              w.globals.markers.colors[seriesEachIndex]
+                            };"></span>
                             <div class="apexcharts-tooltip-text" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;">
                                 <div class="apexcharts-tooltip-y-group">
                                     <span class="apexcharts-tooltip-text-y-label">${
-          w.globals.seriesNames[seriesEachIndex]
-      }: </span>
+                                      w.globals.seriesNames[seriesEachIndex]
+                                    }: </span>
                                     <span class="apexcharts-tooltip-text-y-value">${w.globals.yLabelFormatters[0](
-          series[seriesEachIndex][hoverIndex]
-      )}</span>
+                                      series[seriesEachIndex][hoverIndex]
+                                    )}</span>
                                 </div>
                             </div>
-                        </div>`;
+                        </div>`
     }
-  });
+  })
   const date = new Date(hoverXaxis).toLocaleDateString('de')
-  return `<div class="apexcharts-tooltip-title" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;">${
-      date
-  }</div>${hoverList}`;
+  return `<div class="apexcharts-tooltip-title" style="font-family: Helvetica, Arial, sans-serif; font-size: 12px;">${date}</div>${hoverList}`
 }
 
 const apexColors = () => [
@@ -379,7 +394,7 @@ export const annotationsPointOptions = (view, annotation, y, testWeek) => ({
   },
 })
 
-export const targetAnnotationOptions = (targetY) => ({
+export const targetAnnotationOptions = targetY => ({
   id: 'target-annotation',
   y: targetY,
   strokeDashArray: 16,
@@ -390,7 +405,7 @@ export const targetAnnotationOptions = (targetY) => ({
   label: {
     borderColor: '#424242',
     borderWidth: 1,
-    text: 'Zielwert: '+targetY,
+    text: 'Zielwert: ' + targetY,
     textAnchor: 'end',
     position: 'right',
     offsetY: 0,
@@ -423,11 +438,23 @@ export const targetRangeAnnotationOptions = (targetY, y2 = null) => ({
   },
 })
 
-export function addTargetToChartData(graphData, opt, deviate, startPoint, endPoint, startPointRange, endPointRange) {
+export function addTargetToChartData(
+  graphData,
+  opt,
+  deviate,
+  startPoint,
+  endPoint,
+  startPointRange,
+  endPointRange
+) {
   const seriesIndex = graphData.length
-  graphData.push({ name: 'Ziel', type: 'line' , data: [startPoint, endPoint] })
+  graphData.push({ name: 'Ziel', type: 'line', data: [startPoint, endPoint] })
   if (deviate) {
-    graphData.push({ name: 'Erlaubte Abweichung', type: 'rangeArea', data: [startPointRange, endPointRange] })
+    graphData.push({
+      name: 'Erlaubte Abweichung',
+      type: 'rangeArea',
+      data: [startPointRange, endPointRange],
+    })
   }
   // enableTooltip could have already been created by the trend line, but if there's none create it now
   prepareOptionsAsArrays(opt, seriesIndex, true, deviate)
@@ -453,7 +480,8 @@ function setTargetOptions(options, seriesIndex, deviate) {
 }
 
 export function addTrendToChartData(graphData, opt, trendlineData, seriesType) {
-  if (trendlineData?.length > 1) {  // as long as there is more than one data point
+  if (trendlineData?.length > 1) {
+    // as long as there is more than one data point
     prepareOptionsAsArrays(opt, graphData.length, true, false)
     const i = graphData.length
     graphData.push({ name: 'Trend', type: seriesType, data: trendlineData }) // add the trend line as an additional series
@@ -470,7 +498,9 @@ function setTrendOptions(opt, i) {
 }
 
 function prepareOptionsAsArrays(opt, size, createEnableTooltip, prepareFills) {
-  if (!opt.colors) { opt.colors = [] }
+  if (!opt.colors) {
+    opt.colors = []
+  }
   // fill up the colors by continuing them based on apexColors, cycling just like ApexCharts would do if there were no more colors
   const aColors = apexColors()
   for (let i = opt.colors.length; opt.colors.length < size; ++i) {
@@ -496,7 +526,7 @@ function prepareOptionsAsArrays(opt, size, createEnableTooltip, prepareFills) {
     opt.stroke.dashArray.fill(last, len)
   }
 
-  if(!isArray(opt.markers.size)) {
+  if (!isArray(opt.markers.size)) {
     opt.markers.size = new Array(size).fill(opt.markers.size)
   } else {
     const len = opt.markers.size.length
