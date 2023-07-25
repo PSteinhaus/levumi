@@ -164,6 +164,11 @@
         :items="simpleTableData"
       ></b-table-lite>
     </b-row>
+    <b-row v-if="niveaus_visible" :hidden="!niveaus_visible">
+      <niveau-overview
+          :niv-config="nivConfig"
+      ></niveau-overview>
+    </b-row>
     <div id="task_level_tooltip"></div>
   </div>
 </template>
@@ -190,10 +195,11 @@
   import { computed } from 'vue'
   import TargetControls from './target-controls.vue'
   import { useTestsStore } from '@/store/testsStore'
+  import NiveauOverview from "@/vue/home/analysis/niveau-overview.vue";
 
   export default {
     name: 'AnalysisView',
-    components: { AnnotationsSection, TargetControls },
+    components: {NiveauOverview, AnnotationsSection, TargetControls },
     inject: ['studentName', 'weeks', 'student_name_parts', 'printDate'],
     provide: function () {
       return {
@@ -202,6 +208,7 @@
         loadStudentTargets: this.loadStudentTargets,
         targetStored: computed(() => this.targetStored), // computed necessary for reactivity
         viewConfig: computed(() => this.viewConfig),
+        testData: computed(() => this.testData),
       }
     },
     props: {
@@ -247,6 +254,9 @@
       viewConfig() {
         return this.configuration.views[this.selectedView]
       },
+      nivConfig() {
+        return this.viewConfig.niv_config
+      },
       columns() {
         return this.viewConfig.columns || []
       },
@@ -275,8 +285,12 @@
       table_visible() {
         return this.viewConfig.type === 'table' || this.viewConfig.type === 'graph_table'
       },
+      niveaus_visible() {
+        return this.viewConfig.type === 'niveaus'
+      },
       table_data() {
-        if (this.viewConfig.type === 'graph') {
+        // return early if the view type has no table
+        if (!['table', 'graph_table'].includes(this.viewConfig.type)) {
           return []
         }
         let weeks = this.weeks.slice().reverse()
@@ -545,7 +559,7 @@
       },
       updateView(animate) {
         const view = this.viewConfig
-        if (view.type === 'table') {
+        if (!['graph', 'graph_table'].includes(view.type)) {
           return
         }
 
