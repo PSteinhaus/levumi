@@ -19,17 +19,17 @@
                 <linearGradient
                     id="linearGradient7580">
                   <stop
+                      id="stop7576"
                       style="stop-color:#e5e5e5;stop-opacity:0.6;"
-                      offset="0"
-                      id="stop7576" />
+                      offset="0" />
                   <stop
+                      id="stop7578"
                       style="stop-color:#ffffff;stop-opacity:0.5;"
-                      offset="1"
-                      id="stop7578" />
+                      offset="1" />
                 </linearGradient>
                 <linearGradient
-                    xlink:href="#linearGradient7580"
                     id="linearGradient7582"
+                    xlink:href="#linearGradient7580"
                     x1="0"
                     y1="59.928831"
                     x2="21.959299"
@@ -41,9 +41,6 @@
                     style="fill:#e5e5e5;fill-opacity:0.6;stroke:#ffffff;stroke-width:0.357;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
                     d="m 21.6308,119.85684 -0.003,-1.1994 -0.004,-1.19649 -0.004,-1.19941 -0.007,-1.19941 -0.009,-1.1965 -0.0101,-1.19939 -0.0144,-1.19941 -0.018,-1.1994 -0.0232,-1.1965 -0.0291,-1.1994 -0.0366,-1.1994 -0.0455,-1.19651 -0.0567,-1.19941 -0.0701,-1.19939 -0.0858,-1.1965 -0.10456,-1.19939 -0.12616,-1.199403 -0.15088,-1.1994 -0.18001,-1.19651 -0.21212,-1.1994 -0.24797,-1.199405 -0.28907,-1.196503 -0.33386,-1.199402 -0.38242,-1.199394 -0.43396,-1.199401 -0.48998,-1.196504 -0.54748,-1.199401 -0.60722,-1.199402 -0.66775,-1.196502 -0.72825,-1.199401 -0.78723,-1.199401 -0.84402,-1.196502 -0.89554,-1.199401 -0.94112,-1.199399 -0.9792,-1.199402 -1.00907,-1.196503 -1.0270101,-1.199401 -1.03299,-1.199399 -1.027,-1.196504 -1.00534,-1.1994 -0.97022,-1.1994 -0.9187,-1.199401 -0.85372,-1.196503 -0.7738,-1.199399 -0.68044,-1.199401 -0.57513,-1.196504 -0.45860995,-1.199399 -0.33387,-1.199401 -0.2024,-1.196504 -0.0687,-1.1994 0.0687,-1.1994 0.2024,-1.199402 0.33387,-1.196502 0.45860995,-1.199399 0.57513,-1.199401 0.68044,-1.196503 0.7738,-1.199401 0.85372,-1.1994 0.9187,-1.199401 0.97022,-1.196503 1.00534,-1.1994 1.027,-1.1994 1.03299,-1.196505 1.0270101,-1.199399 1.00907,-1.1994 0.9792,-1.1994 0.94112,-1.196503 0.89554,-1.199401 0.84402,-1.1994 0.78723,-1.196504 0.72825,-1.199399 0.66775,-1.199401 0.60722,-1.196504 0.54748,-1.1994 0.48998,-1.1994 0.43396,-1.1994 0.38242,-1.196503 0.33386,-1.199401 0.28907,-1.1994 0.24797,-1.196503 0.21212,-1.199401 0.18001,-1.1994 0.15088,-1.1994 0.12616,-1.196504 0.10456,-1.199401 0.0858,-1.199398 0.0701,-1.196504 0.0567,-1.199401 0.0455,-1.1994 0.0366,-1.196503 0.0291,-1.199401 0.0232,-1.1994002 0.018,-1.1994 0.0144,-1.196503 0.0101,-1.199401 0.009,-1.1993999 0.007,-1.1965033 0.004,-1.1994003 0.004,-1.1994003 0.003,-1.19940034194" />
               </svg>
-              <!-- template v-for="(bar, key) in distributionForLevel(n)">
-                <div :key="key" class="dist-bar" :style="bar"></div>
-              </template -->
             </div>
           </b-col>
           <b-col cols="6" lg="7" class="t-examples">
@@ -100,14 +97,6 @@ export default {
           attachment => attachment.content_type.startsWith('image') && attachment.filename.startsWith(A + E)
       )
     },
-    maxInDistribution() {
-      const dist = this.nivConfig.distribution
-      let max = Number.NEGATIVE_INFINITY
-      for (var i = 0; i < dist.length; i++) {
-        max = Math.max(max, ...dist[i])
-      }
-      return max
-    },
     /** A decreasing list of niveau numbers, such as [4,3,2,1] for 4 niveaus. */
     niveauArray() {
       const nivCount = this.nivConfig.distribution.length
@@ -152,12 +141,6 @@ export default {
     explanationForLevel(level) {
       return this.nivConfig.explanations[level-1]
     },
-    distributionForLevel(level) {
-      const levelDist = this.nivConfig.distribution[level-1]
-      return levelDist.map(studentCount => {
-        return { 'width': (studentCount / this.maxInDistribution) * 100 + "%", 'height': (1 / levelDist.length) * 100 + "%" }
-      }).reverse()
-    }
   },
 }
 </script>
@@ -196,13 +179,6 @@ export default {
 .niveau:last-child {
   border-radius: 0 0 8px 8px;
   border-width: 0;
-}
-.dist-bar {
-  margin: 0 0 0 auto;
-  padding: 1px 0 1px 0;
-  display: block;
-  background-color: #FFFFFFFF;
-  border: 1px solid #797979;
 }
 .t-examples {
   padding: 0 !important;
