@@ -38,7 +38,7 @@
                 </defs>
                 <path
                     id="polyline21800"
-                    style="fill:#e5e5e5;fill-opacity:0.6;stroke:#ffffff;stroke-width:0.357;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+                    style="fill:#ffffff;fill-opacity:0.5;stroke:#d2d2d2;stroke-width:0.357;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
                     d="m 21.6308,119.85684 -0.003,-1.1994 -0.004,-1.19649 -0.004,-1.19941 -0.007,-1.19941 -0.009,-1.1965 -0.0101,-1.19939 -0.0144,-1.19941 -0.018,-1.1994 -0.0232,-1.1965 -0.0291,-1.1994 -0.0366,-1.1994 -0.0455,-1.19651 -0.0567,-1.19941 -0.0701,-1.19939 -0.0858,-1.1965 -0.10456,-1.19939 -0.12616,-1.199403 -0.15088,-1.1994 -0.18001,-1.19651 -0.21212,-1.1994 -0.24797,-1.199405 -0.28907,-1.196503 -0.33386,-1.199402 -0.38242,-1.199394 -0.43396,-1.199401 -0.48998,-1.196504 -0.54748,-1.199401 -0.60722,-1.199402 -0.66775,-1.196502 -0.72825,-1.199401 -0.78723,-1.199401 -0.84402,-1.196502 -0.89554,-1.199401 -0.94112,-1.199399 -0.9792,-1.199402 -1.00907,-1.196503 -1.0270101,-1.199401 -1.03299,-1.199399 -1.027,-1.196504 -1.00534,-1.1994 -0.97022,-1.1994 -0.9187,-1.199401 -0.85372,-1.196503 -0.7738,-1.199399 -0.68044,-1.199401 -0.57513,-1.196504 -0.45860995,-1.199399 -0.33387,-1.199401 -0.2024,-1.196504 -0.0687,-1.1994 0.0687,-1.1994 0.2024,-1.199402 0.33387,-1.196502 0.45860995,-1.199399 0.57513,-1.199401 0.68044,-1.196503 0.7738,-1.199401 0.85372,-1.1994 0.9187,-1.199401 0.97022,-1.196503 1.00534,-1.1994 1.027,-1.1994 1.03299,-1.196505 1.0270101,-1.199399 1.00907,-1.1994 0.9792,-1.1994 0.94112,-1.196503 0.89554,-1.199401 0.84402,-1.1994 0.78723,-1.196504 0.72825,-1.199399 0.66775,-1.199401 0.60722,-1.196504 0.54748,-1.1994 0.48998,-1.1994 0.43396,-1.1994 0.38242,-1.196503 0.33386,-1.199401 0.28907,-1.1994 0.24797,-1.196503 0.21212,-1.199401 0.18001,-1.1994 0.15088,-1.1994 0.12616,-1.196504 0.10456,-1.199401 0.0858,-1.199398 0.0701,-1.196504 0.0567,-1.199401 0.0455,-1.1994 0.0366,-1.196503 0.0291,-1.199401 0.0232,-1.1994002 0.018,-1.1994 0.0144,-1.196503 0.0101,-1.199401 0.009,-1.1993999 0.007,-1.1965033 0.004,-1.1994003 0.004,-1.1994003 0.003,-1.19940034194" />
               </svg>
             </div>
@@ -46,7 +46,15 @@
           <b-col cols="6" lg="7" class="t-examples">
             <template v-for="(example, key) in examplesForLevel(n)">
               <div :key="key" class="example-div">
-                <span>{{example.text}}</span>
+                <span v-for="(line, lineKey) in example.lines" :key="lineKey" style="display: block">
+                  <span v-for="(part, partKey) in line" :key="partKey" style="display: inline-flex; vertical-align: middle">
+                    <div v-if="part.type === 'text-fraction'" class="fraction">
+                      <p class="numerator">{{part.numerator}}</p>
+                      <p class="denominator">{{part.denominator}}</p>
+                    </div>
+                    <span v-else-if="part.type === 'plain-text'" style="display: inline-flex">{{part.text}}</span>
+                  </span>
+                </span>
                 <img  v-if="example.image !== undefined" class="example-img" :src="example.image.filepath" :alt="'eine Beispielaufgabe für das Niveau' + n">
               </div>
             </template>
@@ -123,9 +131,29 @@ export default {
       // build examples from texts, adding images where appropriate
       let i = 1
       return example_texts.map(text => {
+        // search for a corresponding image
         const image = example_images.find(img => img.filename.startsWith(A + E + level + "_" + i))
+        // first break the text into lines
+        const lines = text.split("\n")
+        // search the text for incidences of \S+⌹\S+ and split it there, keeping the separator
+        const fracRegex = /(\S+⌹\S+)/
+        for (let j = 0; j < lines.length; ++j) {
+          let k = -1
+          lines[j] = lines[j]
+              .split(fracRegex)
+              // map this to an array of objects that are either of a 'plain-text' or 'fraction' type
+              .map(s => {
+                ++k
+                if (fracRegex.test(s)) {
+                  const slots = s.split('⌹')
+                  return {type: 'text-fraction', id: k, numerator: slots[0], denominator: slots[1]}
+                } else {
+                  return {type: 'plain-text', id: k, text: s}
+                }
+              })
+        }
         ++i
-        return {text: text, image: image}
+        return {lines: lines, image: image}
       })
     },
     headlineForLevel(level) {
@@ -272,5 +300,24 @@ export default {
 .headline-col:hover .explanation-tooltip {
   visibility: visible;
   opacity: 1;
+}
+.fraction {
+  display: inline-grid;
+  width: max-content;
+  font-size: 75%;
+  margin: 1pt;
+  text-align: center;
+}
+.numerator {
+  border-bottom: 1px solid black;
+  padding-left: 2pt;
+  padding-right: 2pt;
+  margin: 0 2pt 0;
+}
+.denominator {
+  border-top: 1px solid black;
+  padding-left: 2pt;
+  padding-right: 2pt;
+  margin: 0 2pt 0;
 }
 </style>
