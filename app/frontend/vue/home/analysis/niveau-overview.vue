@@ -107,7 +107,7 @@ export default {
     },
     /** A decreasing list of niveau numbers, such as [4,3,2,1] for 4 niveaus. */
     niveauArray() {
-      const nivCount = this.nivConfig.distribution.length
+      const nivCount = this.nivConfig.heights.length
       return [...Array(nivCount).keys()].map(x => x+1).reverse()
     },
     overviewHeight() {
