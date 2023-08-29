@@ -1,6 +1,6 @@
 <template>
   <div id="niveau-overview">
-    <b-container id="niv-container" class="mb-3" fluid>
+    <b-container id="niv-container" :style="{max_height: 'desiredHeight'}" class="mb-3" fluid>
       <template v-for="n in niveauArray">
         <b-row :key="n" cols="3" class="niveau" :style="styleForLevel(n)">
           <b-col cols="2" class="l-niv">
@@ -114,7 +114,11 @@ export default {
       if (this.loaded) {
         return document.getElementById("niv-container")?.clientHeight
       }
-      return 1000
+      return this.desiredHeight
+    },
+    /** The desired height of the overview in pixels */
+    desiredHeight() {
+      return 500 + this.niveauArray.length * 100
     },
     /** A percentage value determining how much the normal should be shifted upwards from its middle position. */
     normalShift() {
