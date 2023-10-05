@@ -4,14 +4,16 @@
 import './add_jquery'
 import * as bootstrap from 'bootstrap'
 
-import BootstrapVue from 'bootstrap-vue'
 import Vue from 'vue'
+import { IconsPlugin, BootstrapVue } from 'bootstrap-vue'
 
 import FrontendApp from '../vue/testing/frontend-app.vue'
 
 import '../styles/application.scss'
 
 window.bootstrap = bootstrap
+window.Vue = Vue
+window.BootstrapVue = { BootstrapVue, IconsPlugin }
 
 const element = document.getElementById('levumi')
 

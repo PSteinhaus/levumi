@@ -37,17 +37,10 @@ export const prepareOptions = (
         opt = apexChartOptions(weekLabels).line
     }
   }
-  const options = deepmerge(cloneDeep(opt), customOptions)
-  if (needRangeAreaChart) {
-    options.chart.type = 'rangeArea'
-  }
-  // for updates on a chart animations may be inadequate
-  options.chart.animations.enabled = animate
 
   if (options.yaxis === undefined) {
     options.yaxis = {}
   }
-
   // check the y-axis needs to be adjusted to display a trend or target
   if (yMax) {
     options.yaxis.max = yMax
@@ -56,6 +49,13 @@ export const prepareOptions = (
       return max * 1.1
     }
   }
+
+  const options = deepmerge(cloneDeep(opt), customOptions)
+  if (needRangeAreaChart) {
+    options.chart.type = 'rangeArea'
+  }
+  // for updates on a chart animations may be inadequate
+  options.chart.animations.enabled = animate
 
   return options
 }
